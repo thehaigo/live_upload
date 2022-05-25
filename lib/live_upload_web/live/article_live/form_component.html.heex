@@ -18,7 +18,21 @@
     <%= error_tag f, :body %>
   
     <%= label f, :eyecatch %>
-    <%= text_input f, :eyecatch %>
+    <%= live_file_input @uploads.eyecatch %>
+    <%= for entry <- @uploads.eyecatch.entries do %>
+      <figure>
+        <%= live_img_preview entry %>
+        <figcaption><%= entry.client_name %></figcaption>
+      </figure>
+    <% end %>
+    <%= if show_uploaded_image?(f.data.eyecatch, @uploads.eyecatch.entries) do %>
+      <figure>
+        <img src={img_url(@socket, f.data.eyecatch)}>      
+        <figcaption><%= Path.basename(f.data.eyecatch) %></figcaption>
+      </figure>
+    <% end %>
+
+    <%= hidden_input f, :eyecatch %>
     <%= error_tag f, :eyecatch %>
   
     <div>

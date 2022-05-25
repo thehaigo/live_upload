@@ -3,6 +3,7 @@ defmodule LiveUploadWeb.LiveHelpers do
   import Phoenix.LiveView.Helpers
 
   alias Phoenix.LiveView.JS
+  alias LiveUploadWeb.Router.Helpers, as: Routes
 
   @doc """
   Renders a live component inside a modal.
@@ -56,5 +57,13 @@ defmodule LiveUploadWeb.LiveHelpers do
     js
     |> JS.hide(to: "#modal", transition: "fade-out")
     |> JS.hide(to: "#modal-content", transition: "fade-out-scale")
+  end
+
+  def img_url(socket, path) do
+    Routes.static_path(socket, path)
+  end
+
+  def show_uploaded_image?(data, entries) do
+    data != "placeholder" && Enum.empty?(entries)
   end
 end

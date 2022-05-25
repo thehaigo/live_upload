@@ -26,10 +26,10 @@
   <tbody id="articles">
     <%= for article <- @articles do %>
       <tr id={"article-#{article.id}"}>
+        <td><img src={img_url(@socket, article.eyecatch)} width="150" height="80"/></td>
         <td><%= article.title %></td>
         <td><%= article.body %></td>
-        <td><%= article.eyecatch %></td>
-
+      
         <td>
           <span><%= live_redirect "Show", to: Routes.article_show_path(@socket, :show, article) %></span>
           <span><%= live_patch "Edit", to: Routes.article_index_path(@socket, :edit, article) %></span>

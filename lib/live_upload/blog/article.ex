@@ -4,7 +4,7 @@ defmodule LiveUpload.Blog.Article do
 
   schema "articles" do
     field :body, :string
-    field :eyecatch, :string
+    field :eyecatch, :string, default: "placeholder"
     field :title, :string
 
     timestamps()
