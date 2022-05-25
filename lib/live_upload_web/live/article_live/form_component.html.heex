@@ -16,14 +16,21 @@
     <%= label f, :body %>
     <%= text_input f, :body %>
     <%= error_tag f, :body %>
-  
-    <%= label f, :eyecatch %>
-    <%= live_file_input @uploads.eyecatch %>
+    
+    <label>
+      <p class="button button-outline">ファイルを選択</p>
+      <span style="visibility:hidden;"><%= live_file_input @uploads.eyecatch %></span>
+    </label>
     <%= for entry <- @uploads.eyecatch.entries do %>
+      <%= if entry.valid? do %>
       <figure>
         <%= live_img_preview entry %>
         <figcaption><%= entry.client_name %></figcaption>
       </figure>
+      <% end %>
+    <% end %>
+    <%= if !is_nil(@upload_error) do %>
+      <span class="invalid-feedback"><%= error_to_string(@upload_error) %></span>
     <% end %>
     <%= if show_uploaded_image?(f.data.eyecatch, @uploads.eyecatch.entries) do %>
       <figure>

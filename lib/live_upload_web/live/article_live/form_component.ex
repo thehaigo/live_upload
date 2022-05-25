@@ -10,7 +10,12 @@ defmodule LiveUploadWeb.ArticleLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> allow_upload(:eyecatch, accept: :any)
+     |> allow_upload(
+       :eyecatch,
+       accept: ~w(.jpeg .jpg .png),
+       max_file_size: 1_000_000
+     )
+     |> assign(:upload_error, nil)
      |> assign(:changeset, changeset)}
   end
 
@@ -21,7 +26,12 @@ defmodule LiveUploadWeb.ArticleLive.FormComponent do
       |> Blog.change_article(article_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    socket =
+      socket
+      |> assign_upload_error(socket.assigns.uploads)
+      |> assign(:changeset, changeset)
+
+    {:noreply, socket}
   end
 
   def handle_event("save", %{"article" => article_params}, socket) do
@@ -38,8 +48,22 @@ defmodule LiveUploadWeb.ArticleLive.FormComponent do
     save_article(socket, socket.assigns.action, article_params)
   end
 
+  def assign_upload_error(socket, %{eyecatch: %{errors: errors}}) do
+    case Enum.empty?(errors) do
+      true ->
+        assign(socket, :upload_error, nil)
+
+      false ->
+        Enum.reduce(errors, socket, fn {ref, error}, acc ->
+          acc
+          |> cancel_upload(:eyecatch, ref)
+          |> assign(:upload_error, error)
+        end)
+    end
+  end
+
   def validate_required(params) do
-    case params["eyecatch"] == "placeholder" do
+    case params["eyecatch"] in ["placeholder", ""] do
       true -> Map.put(params, "eyecatch", nil)
       false -> params
     end
@@ -80,6 +104,12 @@ defmodule LiveUploadWeb.ArticleLive.FormComponent do
   end
 
   defp save_article(socket, :new, article_params) do
+    socket =
+      case is_nil(socket.assigns.upload_error) do
+        true -> socket
+        false -> assign(socket, :upload_error, nil)
+      end
+
     case Blog.create_article(article_params) do
       {:ok, _article} ->
         {:noreply,

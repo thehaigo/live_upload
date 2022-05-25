@@ -44,4 +44,7 @@ defmodule LiveUploadWeb.ErrorHelpers do
       Gettext.dgettext(LiveUploadWeb.Gettext, "errors", msg, opts)
     end
   end
+
+  def error_to_string(:too_large), do: "Too large"
+  def error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
 end
